@@ -1,0 +1,30 @@
+[Unit]
+Description=Kesiyos Bot — Messenger/IG Agent
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=exec
+User=kesiyos-bot
+Group=kesiyos-bot
+WorkingDirectory=/opt/kesiyos-bot
+ExecStart=/opt/kesiyos-bot/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8444 --workers 2
+Restart=always
+RestartSec=5
+
+# Environment
+EnvironmentFile=/opt/kesiyos-bot/.env
+
+# Logging (stdout/stderr go to journald, app also writes to file)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=kesiyos-bot
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/log/kesiyos-bot /opt/kesiyos-bot
+
+[Install]
+WantedBy=multi-user.target
